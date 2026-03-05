@@ -207,6 +207,48 @@ canvas {
   z-index: 1000;
 }
 
+.pause-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.pause-overlay.show {
+  display: flex;
+}
+
+.pause-card {
+  position: relative;
+  width: min(92vw, 460px);
+  background: rgba(0, 0, 0, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  padding: 18px 44px 18px 18px;
+  color: #f2f6ff;
+  text-align: center;
+}
+
+.pause-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  border: none;
+  background: transparent;
+  color: #f2f6ff;
+  font-size: 1rem;
+  font-family: "Courier New", monospace;
+  cursor: pointer;
+  opacity: 0.85;
+}
+
+.pause-close:hover {
+  opacity: 1;
+}
+
 .game-over.show {
   display: block;
 }

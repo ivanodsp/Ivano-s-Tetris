@@ -100,6 +100,7 @@ const TETROMINOES = [
 
 let canvas;
 let ctx;
+let pauseOverlay;
 let board = [];
 let currentPiece = null;
 let currentX = 0;
@@ -145,7 +146,26 @@ const nextRepeat = {
 function init() {
   canvas = document.getElementById("gameCanvas");
   ctx = canvas.getContext("2d");
+  pauseOverlay = document.getElementById("pauseOverlay");
+  const pauseClose = document.getElementById("pauseClose");
   setupThemeSelector();
+
+  if (pauseOverlay) {
+    pauseOverlay.addEventListener("click", () => {
+      if (isPaused && !gameOver) {
+        togglePause();
+      }
+    });
+  }
+
+  if (pauseClose) {
+    pauseClose.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (isPaused && !gameOver) {
+        togglePause();
+      }
+    });
+  }
 
   resizeBoard();
 
@@ -592,6 +612,10 @@ function handleKeyPress(e) {
       e.preventDefault();
       if (!e.repeat) togglePause();
       break;
+    case "Escape":
+      e.preventDefault();
+      if (!e.repeat) togglePause();
+      break;
   }
 }
 
@@ -615,12 +639,21 @@ function handleKeyRelease(e) {
 function togglePause() {
   isPaused = !isPaused;
   clearHeldKeys();
+  if (pauseOverlay) {
+    pauseOverlay.classList.toggle("show", isPaused);
+    pauseOverlay.setAttribute("aria-hidden", isPaused ? "false" : "true");
+  }
   document.getElementById("status").textContent = isPaused ? "Paused" : "Playing...";
 }
 
 function endGame() {
   gameOver = true;
+  isPaused = false;
   clearHeldKeys();
+  if (pauseOverlay) {
+    pauseOverlay.classList.remove("show");
+    pauseOverlay.setAttribute("aria-hidden", "true");
+  }
   document.getElementById("status").textContent = "Game Over";
   document.getElementById("finalScore").textContent = score;
   document.getElementById("gameOver").classList.add("show");
