@@ -1,20 +1,30 @@
 # Ivano's Tetris
 
-<p align="center">
-  <img src="src/assets/game-preview-light.svg" alt="Ivano's Tetris light banner" width="900" />
-</p>
-
-<p align="center">
-  <img src="src/assets/game-preview-neon.svg" alt="Ivano's Tetris neon banner" width="900" />
-</p>
-
-Classic Tetris with neon style, responsive controls, and mobile touch buttons.
-
-## Play Locally
+## Installation
+To install the game, clone the repository and run the setup script:
 
 ```bash
-cd src
-python3 -m http.server 8000
+git clone https://github.com/ivanodsp/Ivano-s-Tetris.git
+cd Ivano-s-Tetris
+./setup.sh
 ```
 
-Open `http://localhost:8000`.
+## Features
+- Classic Tetris gameplay
+- 10 different levels
+- High score tracking
+- Customizable controls
+
+## How to Play
+Use the arrow keys to move and rotate the pieces. The goal is to create complete lines without gaps. When a line is filled, it will disappear, and you will earn points.
+
+## Technologies
+- HTML, CSS, JavaScript
+- Node.js for backend
+- WebSocket for multiplayer support
+
+## Author
+Created by Ivano DSP.
+
+## Last Updated
+2026-03-05 22:18:49 UTC
