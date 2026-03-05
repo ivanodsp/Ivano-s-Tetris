@@ -1,7 +1,14 @@
 # Ivano's Tetris
 
-![Banner Image 1](https://example.com/banner1.png)
-![Banner Image 2](https://example.com/banner2.png)
+<p align="center">
+  <img src="src/assets/game-preview-light.svg" alt="Ivano's Tetris light banner" width="900" />
+</p>
+
+<p align="center">
+  <img src="src/assets/game-preview-neon.svg" alt="Ivano's Tetris neon banner" width="900" />
+</p>
+
+Classic Tetris with neon style, responsive controls, and mobile touch buttons.
 
 ## Installation
 
@@ -9,30 +16,43 @@ To get a copy of the project up and running on your local machine, clone the rep
 
 ```bash
 git clone https://github.com/ivanodsp/Ivano-s-Tetris.git
+cd Ivano-s-Tetris
 ```
+
+## Play Locally
+
+```bash
+cd src
+python3 -m http.server 8000
+```
+
+Open `http://localhost:8000`.
 
 ## Features
 
-- Classic Tetris gameplay
-- Multiple difficulty levels
-- High score tracking
+- 🎮 Classic Tetris gameplay
+- 🌈 Neon style graphics
+- 📱 Mobile touch controls
+- 💻 Responsive design
+- ⌨️ Keyboard controls
 
 ## How to Play
 
-1. Use the arrow keys to move the pieces.
-2. Rotate the pieces with the up arrow key.
-3. Complete a line to score points.
+- **Arrow Keys** / **Touch buttons**: Move pieces left/right
+- **Up Arrow** / **Rotate button**: Rotate piece
+- **Down Arrow** / **Drop button**: Move piece down faster
+- **Space**: Drop piece instantly
 
 ## Technologies
 
-- HTML
-- CSS
-- JavaScript
-- Node.js (for server)
+- HTML5
+- CSS3
+- JavaScript (Vanilla)
+
+## License
+
+MIT License
 
 ## Author
 
 **ivanodsp** - [GitHub Profile](https://github.com/ivanodsp)
-
-### Date Updated
-2026-03-05 22:20:05
