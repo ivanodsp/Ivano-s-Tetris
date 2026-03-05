@@ -184,6 +184,68 @@ canvas {
   margin-top: 10px;
 }
 
+.mobile-controls {
+  display: none;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  body {
+    padding-bottom: 180px;
+  }
+
+  .mobile-controls {
+    position: fixed;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1300;
+    display: grid;
+    grid-template-columns: repeat(3, 64px);
+    grid-template-rows: repeat(2, 56px);
+    gap: 10px;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+  }
+
+  .mobile-btn {
+    border: 1px solid rgba(23, 242, 255, 0.6);
+    border-radius: 10px;
+    background: rgba(3, 10, 18, 0.9);
+    color: var(--accent-cyan);
+    font-size: 1.7rem;
+    font-weight: bold;
+    text-shadow: 0 0 8px rgba(23, 242, 255, 0.6);
+    box-shadow: 0 0 12px rgba(23, 242, 255, 0.25);
+    cursor: pointer;
+  }
+
+  .mobile-btn:active {
+    transform: scale(0.96);
+    background: rgba(6, 20, 32, 0.95);
+  }
+
+  .mobile-btn.up {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .mobile-btn.left {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .mobile-btn.down {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .mobile-btn.right {
+    grid-column: 3;
+    grid-row: 2;
+  }
+}
+
 @media (max-width: 768px) {
   body {
     padding: 68px 14px 14px;

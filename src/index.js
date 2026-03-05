@@ -91,6 +91,30 @@ let dropInterval = 1000;
 let lastTime = 0;
 let elapsedTimeMs = 0;
 
+const INPUT_REPEAT = {
+  horizontalDelay: 130,
+  horizontalRate: 55,
+  downRate: 45,
+};
+
+const heldKeys = {
+  left: false,
+  right: false,
+  down: false,
+};
+
+const heldTimers = {
+  left: 0,
+  right: 0,
+  down: 0,
+};
+
+const nextRepeat = {
+  left: INPUT_REPEAT.horizontalDelay,
+  right: INPUT_REPEAT.horizontalDelay,
+  down: INPUT_REPEAT.downRate,
+};
+
 function init() {
   canvas = document.getElementById("gameCanvas");
   ctx = canvas.getContext("2d");
@@ -112,7 +136,10 @@ function init() {
 
   requestAnimationFrame(gameLoop);
   document.addEventListener("keydown", handleKeyPress);
+  document.addEventListener("keyup", handleKeyRelease);
+  window.addEventListener("blur", clearHeldKeys);
   window.addEventListener("resize", resizeBoard);
+  setupTouchControls();
 }
 
 function gameLoop(time = 0) {
@@ -127,6 +154,7 @@ function gameLoop(time = 0) {
     dropCounter += deltaTime;
     elapsedTimeMs += deltaTime;
     updateTimerDisplay();
+    processHeldInput(deltaTime);
 
     if (dropCounter > dropInterval) {
       moveDown();
@@ -345,45 +373,198 @@ function updateHud() {
   }
 }
 
+function processHeldInput(deltaTime) {
+  if (heldKeys.left && !heldKeys.right) {
+    processHorizontalRepeat("left", deltaTime, moveLeft);
+  } else {
+    resetHeldTimer("left");
+  }
+
+  if (heldKeys.right && !heldKeys.left) {
+    processHorizontalRepeat("right", deltaTime, moveRight);
+  } else {
+    resetHeldTimer("right");
+  }
+
+  if (heldKeys.down) {
+    heldTimers.down += deltaTime;
+    while (heldTimers.down >= nextRepeat.down) {
+      moveDown();
+      heldTimers.down -= nextRepeat.down;
+      nextRepeat.down = INPUT_REPEAT.downRate;
+    }
+  } else {
+    resetHeldTimer("down");
+  }
+}
+
+function processHorizontalRepeat(key, deltaTime, moveFn) {
+  heldTimers[key] += deltaTime;
+
+  while (heldTimers[key] >= nextRepeat[key]) {
+    moveFn();
+    heldTimers[key] -= nextRepeat[key];
+    nextRepeat[key] = INPUT_REPEAT.horizontalRate;
+  }
+}
+
+function resetHeldTimer(key) {
+  heldTimers[key] = 0;
+  nextRepeat[key] =
+    key === "down" ? INPUT_REPEAT.downRate : INPUT_REPEAT.horizontalDelay;
+}
+
+function clearHeldKeys() {
+  heldKeys.left = false;
+  heldKeys.right = false;
+  heldKeys.down = false;
+  resetHeldTimer("left");
+  resetHeldTimer("right");
+  resetHeldTimer("down");
+}
+
+function setupTouchControls() {
+  const controls = document.getElementById("mobileControls");
+  if (!controls) return;
+
+  const buttons = controls.querySelectorAll("[data-action]");
+  buttons.forEach((button) => {
+    const action = button.dataset.action;
+
+    button.addEventListener(
+      "touchstart",
+      (e) => {
+        e.preventDefault();
+        handleControlStart(action);
+      },
+      { passive: false }
+    );
+
+    button.addEventListener("touchend", () => handleControlEnd(action));
+    button.addEventListener("touchcancel", () => handleControlEnd(action));
+
+    // Mouse fallback for simulators and desktop testing.
+    button.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      handleControlStart(action);
+    });
+    button.addEventListener("mouseup", () => handleControlEnd(action));
+    button.addEventListener("mouseleave", () => handleControlEnd(action));
+  });
+}
+
+function handleControlStart(action) {
+  if (gameOver || isPaused) return;
+
+  switch (action) {
+    case "left":
+      heldKeys.left = true;
+      resetHeldTimer("left");
+      moveLeft();
+      break;
+    case "right":
+      heldKeys.right = true;
+      resetHeldTimer("right");
+      moveRight();
+      break;
+    case "down":
+      heldKeys.down = true;
+      resetHeldTimer("down");
+      moveDown();
+      break;
+    case "rotate":
+      rotate();
+      break;
+  }
+}
+
+function handleControlEnd(action) {
+  switch (action) {
+    case "left":
+      heldKeys.left = false;
+      resetHeldTimer("left");
+      break;
+    case "right":
+      heldKeys.right = false;
+      resetHeldTimer("right");
+      break;
+    case "down":
+      heldKeys.down = false;
+      resetHeldTimer("down");
+      break;
+  }
+}
+
 function handleKeyPress(e) {
   if (gameOver) return;
 
   switch (e.key) {
     case "ArrowLeft":
       e.preventDefault();
-      if (!isPaused) moveLeft();
+      heldKeys.left = true;
+      if (!e.repeat && !isPaused) {
+        resetHeldTimer("left");
+        moveLeft();
+      }
       break;
     case "ArrowRight":
       e.preventDefault();
-      if (!isPaused) moveRight();
+      heldKeys.right = true;
+      if (!e.repeat && !isPaused) {
+        resetHeldTimer("right");
+        moveRight();
+      }
       break;
     case "ArrowDown":
       e.preventDefault();
-      if (!isPaused) moveDown();
+      heldKeys.down = true;
+      if (!e.repeat && !isPaused) {
+        resetHeldTimer("down");
+        moveDown();
+      }
       break;
     case "ArrowUp":
       e.preventDefault();
-      if (!isPaused) rotate();
+      if (!e.repeat && !isPaused) rotate();
       break;
     case " ":
       e.preventDefault();
-      if (!isPaused) hardDrop();
+      if (!e.repeat && !isPaused) hardDrop();
       break;
     case "p":
     case "P":
       e.preventDefault();
-      togglePause();
+      if (!e.repeat) togglePause();
+      break;
+  }
+}
+
+function handleKeyRelease(e) {
+  switch (e.key) {
+    case "ArrowLeft":
+      heldKeys.left = false;
+      resetHeldTimer("left");
+      break;
+    case "ArrowRight":
+      heldKeys.right = false;
+      resetHeldTimer("right");
+      break;
+    case "ArrowDown":
+      heldKeys.down = false;
+      resetHeldTimer("down");
       break;
   }
 }
 
 function togglePause() {
   isPaused = !isPaused;
+  clearHeldKeys();
   document.getElementById("status").textContent = isPaused ? "Paused" : "Playing...";
 }
 
 function endGame() {
   gameOver = true;
+  clearHeldKeys();
   document.getElementById("status").textContent = "Game Over";
   document.getElementById("finalScore").textContent = score;
   document.getElementById("gameOver").classList.add("show");
