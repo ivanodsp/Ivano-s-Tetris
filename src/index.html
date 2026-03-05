@@ -11,7 +11,7 @@
       <div class="main-panel">
         <div>
           <h1>Ivano's Tetris</h1>
-          <div class="subtitle">Build neon shapes, clear rows, and chase a new high score.</div>
+          <div class="subtitle">Classic Tetris in neon mode: stack smart, clear lines, level up.</div>
         </div>
         <canvas id="gameCanvas" width="300" height="600"></canvas>
       </div>
@@ -20,18 +20,13 @@
         <div class="info-section">
           <h3>Level</h3>
           <div class="score" id="level">1</div>
+          <h3>Lines</h3>
+          <div class="score" id="lines">0</div>
           <h3>Current Score</h3>
           <div class="score" id="score">0</div>
           <h3>High Score</h3>
           <div class="high-score" id="high-score">0</div>
           <div class="status" id="status">Playing...</div>
-        </div>
-        <div class="info-section">
-          <h3>Target Pattern</h3>
-          <div class="pattern-preview">
-            <canvas id="patternCanvas" width="100" height="100"></canvas>
-            <div class="pattern-name" id="patternName">Loading...</div>
-          </div>
         </div>
 
         <div class="info-section">
@@ -49,12 +44,11 @@
 
     <div class="game-over" id="gameOver">
       <h2>GAME OVER</h2>
-      <p>Neon grid overloaded.</p>
+      <p>The stack hit the top.</p>
       <p>Final Score: <span id="finalScore">0</span></p>
       <button onclick="location.reload()">Restart</button>
     </div>
 
-    <script src="patterns.js"></script>
     <script src="index.js"></script>
   </body>
 </html>

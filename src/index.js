@@ -1,8 +1,7 @@
-// Game constants
+// Classic Tetris constants
 const COLS = 10;
 const ROWS = 20;
 const BLOCK_SIZE = 30;
-const PATTERN_SIZE = 5;
 
 const HIGH_SCORE_KEY = "ivanosTetrisHighScore";
 const LEGACY_HIGH_SCORE_KEY = "stackOverflownHighScore";
@@ -10,40 +9,73 @@ const LEGACY_HIGH_SCORE_KEY = "stackOverflownHighScore";
 const UI_COLORS = {
   grid: "#1f2f47",
   blockStroke: "#060c16",
-  patternBackground: "#030711",
-  patternBlock: "#ff2fd8",
-  patternStroke: "#1f2f47",
+  boardBackground: "#040b14",
 };
 
-// Colors for blocks (neon palette)
+// Neon color palette for pieces
 const COLORS = {
-  0: "#040b14", // Empty
-  1: "#ff4266", // Neon red
-  2: "#17f2ff", // Neon cyan
-  3: "#ff8b2b", // Neon orange
-  4: "#ff2fd8", // Neon pink
-  5: "#b7ff00", // Neon lime
-  6: "#5d7bff", // Electric indigo
-  7: "#f7ff4a", // Neon yellow
-  8: "#000000", // Void (black)
+  0: "#040b14",
+  1: "#17f2ff", // I
+  2: "#5d7bff", // J
+  3: "#ff8b2b", // L
+  4: "#f7ff4a", // O
+  5: "#b7ff00", // S
+  6: "#ff2fd8", // T
+  7: "#ff4266", // Z
 };
 
-// Tetromino shapes (simplified for easier pattern matching)
-const SHAPES = [
-  [[1]], // Single block
-  [[2, 2]], // Horizontal pair
-  [[3], [3]], // Vertical pair
-  [
-    [4, 4],
-    [4, 4],
-  ], // 2x2 square
-  [[5, 5, 5]], // Horizontal line of 3
-  [[8]], // Void block (black)
-  [[8, 8]], // Void pair
+// Standard 7 tetrominoes
+const TETROMINOES = [
+  {
+    color: 1,
+    shape: [[1, 1, 1, 1]],
+  },
+  {
+    color: 2,
+    shape: [
+      [1, 0, 0],
+      [1, 1, 1],
+    ],
+  },
+  {
+    color: 3,
+    shape: [
+      [0, 0, 1],
+      [1, 1, 1],
+    ],
+  },
+  {
+    color: 4,
+    shape: [
+      [1, 1],
+      [1, 1],
+    ],
+  },
+  {
+    color: 5,
+    shape: [
+      [0, 1, 1],
+      [1, 1, 0],
+    ],
+  },
+  {
+    color: 6,
+    shape: [
+      [0, 1, 0],
+      [1, 1, 1],
+    ],
+  },
+  {
+    color: 7,
+    shape: [
+      [1, 1, 0],
+      [0, 1, 1],
+    ],
+  },
 ];
 
-// Game state
-let canvas, ctx, patternCanvas, patternCtx;
+let canvas;
+let ctx;
 let board = [];
 let currentPiece = null;
 let currentX = 0;
@@ -51,47 +83,33 @@ let currentY = 0;
 let score = 0;
 let highScore = 0;
 let level = 1;
-let patternsCleared = 0;
+let linesCleared = 0;
 let gameOver = false;
 let isPaused = false;
 let dropCounter = 0;
 let dropInterval = 1000;
 let lastTime = 0;
-let targetPattern = null;
 
-// Initialize game
 function init() {
   canvas = document.getElementById("gameCanvas");
   ctx = canvas.getContext("2d");
-  patternCanvas = document.getElementById("patternCanvas");
-  patternCtx = patternCanvas.getContext("2d");
 
-  // Initialize empty board
   board = Array(ROWS)
     .fill(null)
     .map(() => Array(COLS).fill(0));
 
-  // Load high score from localStorage (supports legacy key)
   highScore =
     parseInt(localStorage.getItem(HIGH_SCORE_KEY)) ||
     parseInt(localStorage.getItem(LEGACY_HIGH_SCORE_KEY)) ||
     0;
-  document.getElementById("high-score").textContent = highScore;
 
-  // Set initial target pattern
-  setNewTargetPattern();
-
-  // Spawn first piece
+  updateHud();
   spawnPiece();
 
-  // Start game loop
   requestAnimationFrame(gameLoop);
-
-  // Add keyboard controls
   document.addEventListener("keydown", handleKeyPress);
 }
 
-// Game loop
 function gameLoop(time = 0) {
   if (!gameOver && !isPaused) {
     const deltaTime = time - lastTime;
@@ -108,27 +126,22 @@ function gameLoop(time = 0) {
   requestAnimationFrame(gameLoop);
 }
 
-// Draw everything
 function draw() {
-  // Clear canvas
-  ctx.fillStyle = COLORS[0];
+  ctx.fillStyle = UI_COLORS.boardBackground;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Draw board
   for (let row = 0; row < ROWS; row++) {
     for (let col = 0; col < COLS; col++) {
-      if (board[row][col]) {
-        drawBlock(ctx, col, row, board[row][col]);
+      if (board[row][col] !== 0) {
+        drawBlock(col, row, board[row][col]);
       }
     }
   }
 
-  // Draw current piece
   if (currentPiece) {
-    drawPiece(ctx, currentPiece, currentX, currentY);
+    drawPiece(currentPiece, currentX, currentY);
   }
 
-  // Draw grid
   ctx.strokeStyle = UI_COLORS.grid;
   ctx.lineWidth = 0.5;
   for (let row = 0; row <= ROWS; row++) {
@@ -145,30 +158,31 @@ function draw() {
   }
 }
 
-// Draw a single block
-function drawBlock(context, x, y, colorCode) {
-  context.fillStyle = COLORS[colorCode];
-  context.fillRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
-  context.strokeStyle = UI_COLORS.blockStroke;
-  context.strokeRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+function drawBlock(x, y, colorCode) {
+  ctx.fillStyle = COLORS[colorCode];
+  ctx.fillRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+  ctx.strokeStyle = UI_COLORS.blockStroke;
+  ctx.strokeRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
 }
 
-// Draw current piece
-function drawPiece(context, piece, offsetX, offsetY) {
-  for (let row = 0; row < piece.length; row++) {
-    for (let col = 0; col < piece[row].length; col++) {
-      if (piece[row][col]) {
-        drawBlock(context, offsetX + col, offsetY + row, piece[row][col]);
+function drawPiece(piece, offsetX, offsetY) {
+  const { shape, color } = piece;
+  for (let row = 0; row < shape.length; row++) {
+    for (let col = 0; col < shape[row].length; col++) {
+      if (shape[row][col]) {
+        drawBlock(offsetX + col, offsetY + row, color);
       }
     }
   }
 }
 
-// Spawn new piece
 function spawnPiece() {
-  const randomShape = SHAPES[Math.floor(Math.random() * SHAPES.length)];
-  currentPiece = randomShape.map((row) => [...row]);
-  currentX = Math.floor(COLS / 2) - Math.floor(currentPiece[0].length / 2);
+  const pieceTemplate = TETROMINOES[Math.floor(Math.random() * TETROMINOES.length)];
+  currentPiece = {
+    color: pieceTemplate.color,
+    shape: pieceTemplate.shape.map((row) => [...row]),
+  };
+  currentX = Math.floor(COLS / 2) - Math.floor(currentPiece.shape[0].length / 2);
   currentY = 0;
 
   if (checkCollision(currentPiece, currentX, currentY)) {
@@ -176,189 +190,124 @@ function spawnPiece() {
   }
 }
 
-// Check collision
 function checkCollision(piece, x, y) {
-  for (let row = 0; row < piece.length; row++) {
-    for (let col = 0; col < piece[row].length; col++) {
-      if (piece[row][col]) {
-        const newX = x + col;
-        const newY = y + row;
+  const { shape } = piece;
+  for (let row = 0; row < shape.length; row++) {
+    for (let col = 0; col < shape[row].length; col++) {
+      if (shape[row][col] === 0) continue;
 
-        if (newX < 0 || newX >= COLS || newY >= ROWS) {
-          return true;
-        }
+      const newX = x + col;
+      const newY = y + row;
 
-        if (newY >= 0 && board[newY][newX]) {
-          return true;
-        }
+      if (newX < 0 || newX >= COLS || newY >= ROWS) {
+        return true;
+      }
+
+      if (newY >= 0 && board[newY][newX] !== 0) {
+        return true;
       }
     }
   }
+
   return false;
 }
 
-// Move piece down
 function moveDown() {
   if (!checkCollision(currentPiece, currentX, currentY + 1)) {
     currentY++;
-  } else {
-    lockPiece();
-    clearCompletedRows();
-    checkPatternMatch();
-    spawnPiece();
+    return;
   }
+
+  lockPiece();
+  clearCompletedRows();
+  spawnPiece();
 }
 
-// Lock piece to board
 function lockPiece() {
-  for (let row = 0; row < currentPiece.length; row++) {
-    for (let col = 0; col < currentPiece[row].length; col++) {
-      if (currentPiece[row][col]) {
-        const boardY = currentY + row;
-        const boardX = currentX + col;
-        if (boardY >= 0) {
-          board[boardY][boardX] = currentPiece[row][col];
-        }
+  const { shape, color } = currentPiece;
+  for (let row = 0; row < shape.length; row++) {
+    for (let col = 0; col < shape[row].length; col++) {
+      if (!shape[row][col]) continue;
+
+      const boardY = currentY + row;
+      const boardX = currentX + col;
+      if (boardY >= 0) {
+        board[boardY][boardX] = color;
       }
     }
   }
 }
 
-// Rotate piece
 function rotate() {
-  const rotated = currentPiece[0].map((_, i) => currentPiece.map((row) => row[i]).reverse());
+  const rotatedShape = currentPiece.shape[0].map((_, i) =>
+    currentPiece.shape.map((row) => row[i]).reverse()
+  );
 
-  if (!checkCollision(rotated, currentX, currentY)) {
-    currentPiece = rotated;
+  const rotatedPiece = {
+    color: currentPiece.color,
+    shape: rotatedShape,
+  };
+
+  if (!checkCollision(rotatedPiece, currentX, currentY)) {
+    currentPiece = rotatedPiece;
   }
 }
 
-// Move left
 function moveLeft() {
   if (!checkCollision(currentPiece, currentX - 1, currentY)) {
     currentX--;
   }
 }
 
-// Move right
 function moveRight() {
   if (!checkCollision(currentPiece, currentX + 1, currentY)) {
     currentX++;
   }
 }
 
-// Hard drop
 function hardDrop() {
   while (!checkCollision(currentPiece, currentX, currentY + 1)) {
     currentY++;
   }
+
   lockPiece();
   clearCompletedRows();
-  checkPatternMatch();
   spawnPiece();
 }
 
-// Clear completed rows and collapse board downward
 function clearCompletedRows() {
-  let clearedRows = 0;
+  let cleared = 0;
 
   for (let row = ROWS - 1; row >= 0; row--) {
-    const isFull = board[row].every((cell) => cell !== 0 && cell !== 8);
+    const isFull = board[row].every((cell) => cell !== 0);
+    if (!isFull) continue;
 
-    if (isFull) {
-      board.splice(row, 1);
-      board.unshift(Array(COLS).fill(0));
-      clearedRows++;
-      row++; // Re-check same row index after shifting
-    }
+    board.splice(row, 1);
+    board.unshift(Array(COLS).fill(0));
+    cleared++;
+    row++;
   }
 
-  if (clearedRows > 0) {
-    score += clearedRows * 50;
-    updateScore();
-  }
-}
+  if (cleared > 0) {
+    linesCleared += cleared;
 
-// Set new target pattern
-function setNewTargetPattern() {
-  targetPattern = ERROR_PATTERNS[Math.floor(Math.random() * ERROR_PATTERNS.length)];
-  drawTargetPattern();
-  document.getElementById("patternName").textContent = targetPattern.name;
-}
+    // Classic scoring values per drop, scaled by level.
+    const linePoints = [0, 40, 100, 300, 1200];
+    score += linePoints[cleared] * level;
 
-// Draw target pattern
-function drawTargetPattern() {
-  if (!targetPattern) return;
+    level = Math.floor(linesCleared / 10) + 1;
+    dropInterval = Math.max(120, 1000 - (level - 1) * 75);
 
-  const blockSize = 20;
-  patternCtx.fillStyle = UI_COLORS.patternBackground;
-  patternCtx.fillRect(0, 0, patternCanvas.width, patternCanvas.height);
-
-  for (let row = 0; row < PATTERN_SIZE; row++) {
-    for (let col = 0; col < PATTERN_SIZE; col++) {
-      if (targetPattern.pattern[row][col]) {
-        patternCtx.fillStyle = UI_COLORS.patternBlock;
-        patternCtx.fillRect(col * blockSize, row * blockSize, blockSize, blockSize);
-        patternCtx.strokeStyle = UI_COLORS.patternStroke;
-        patternCtx.strokeRect(col * blockSize, row * blockSize, blockSize, blockSize);
-      }
-    }
+    updateHud();
   }
 }
 
-// Check for pattern match
-function checkPatternMatch() {
-  for (let startRow = 0; startRow <= ROWS - PATTERN_SIZE; startRow++) {
-    for (let startCol = 0; startCol <= COLS - PATTERN_SIZE; startCol++) {
-      if (matchesPattern(startRow, startCol)) {
-        clearPattern(startRow, startCol);
-        score += 100;
-        patternsCleared++;
-        if (patternsCleared % 5 === 0) {
-          level++;
-          dropInterval = Math.max(200, 1000 - (level - 1) * 100);
-          document.getElementById("level").textContent = level;
-        }
-        updateScore();
-        setNewTargetPattern();
-        return;
-      }
-    }
-  }
-}
-
-// Check if pattern matches at position
-function matchesPattern(startRow, startCol) {
-  for (let row = 0; row < PATTERN_SIZE; row++) {
-    for (let col = 0; col < PATTERN_SIZE; col++) {
-      const cellValue = board[startRow + row][startCol + col];
-      // Void blocks (8) count as empty for pattern matching
-      const hasBlock = cellValue !== 0 && cellValue !== 8;
-      const needsBlock = targetPattern.pattern[row][col] === 1;
-
-      if (hasBlock !== needsBlock) {
-        return false;
-      }
-    }
-  }
-  return true;
-}
-
-// Clear matched pattern
-function clearPattern(startRow, startCol) {
-  // Clear all blocks on the board
-  for (let row = 0; row < ROWS; row++) {
-    for (let col = 0; col < COLS; col++) {
-      board[row][col] = 0;
-    }
-  }
-}
-
-// Update score display
-function updateScore() {
+function updateHud() {
   document.getElementById("score").textContent = score;
+  document.getElementById("high-score").textContent = highScore;
+  document.getElementById("level").textContent = level;
+  document.getElementById("lines").textContent = linesCleared;
 
-  // Update high score if current score exceeds it
   if (score > highScore) {
     highScore = score;
     document.getElementById("high-score").textContent = highScore;
@@ -366,7 +315,6 @@ function updateScore() {
   }
 }
 
-// Handle keyboard input
 function handleKeyPress(e) {
   if (gameOver) return;
 
@@ -399,18 +347,16 @@ function handleKeyPress(e) {
   }
 }
 
-// Toggle pause
 function togglePause() {
   isPaused = !isPaused;
   document.getElementById("status").textContent = isPaused ? "Paused" : "Playing...";
 }
 
-// End game
 function endGame() {
   gameOver = true;
+  document.getElementById("status").textContent = "Game Over";
   document.getElementById("finalScore").textContent = score;
   document.getElementById("gameOver").classList.add("show");
 }
 
-// Start the game when page loads
 window.addEventListener("load", init);

@@ -104,25 +104,6 @@ canvas {
   text-shadow: 0 0 10px rgba(255, 139, 43, 0.45);
 }
 
-.pattern-preview {
-  margin-top: 10px;
-}
-
-#patternCanvas {
-  border: 2px solid rgba(23, 242, 255, 0.35);
-  background: #030711;
-  display: block;
-  margin: 10px auto;
-}
-
-.pattern-name {
-  text-align: center;
-  color: var(--accent-pink);
-  font-weight: bold;
-  margin-top: 8px;
-  font-size: 0.9em;
-}
-
 .controls {
   line-height: 1.8;
   color: var(--text-muted);
