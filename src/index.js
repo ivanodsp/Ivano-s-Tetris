@@ -227,6 +227,8 @@ function draw() {
   }
 
   if (currentPiece) {
+    const ghostY = getGhostY();
+    drawGhostPiece(currentPiece, currentX, ghostY);
     drawPiece(currentPiece, currentX, currentY);
   }
 
@@ -244,6 +246,21 @@ function draw() {
     ctx.lineTo(col * BLOCK_SIZE, ROWS * BLOCK_SIZE);
     ctx.stroke();
   }
+}
+
+function getGhostY() {
+  let ghostY = currentY;
+  while (!checkCollision(currentPiece, currentX, ghostY + 1)) {
+    ghostY++;
+  }
+  return ghostY;
+}
+
+function drawGhostPiece(piece, offsetX, offsetY) {
+  ctx.save();
+  ctx.globalAlpha = 0.28;
+  drawPiece(piece, offsetX, offsetY);
+  ctx.restore();
 }
 
 function resizeBoard() {
