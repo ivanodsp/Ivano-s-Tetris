@@ -188,6 +188,7 @@ function moveDown() {
     currentY++;
   } else {
     lockPiece();
+    clearCompletedRows();
     checkPatternMatch();
     spawnPiece();
   }
@@ -237,8 +238,30 @@ function hardDrop() {
     currentY++;
   }
   lockPiece();
+  clearCompletedRows();
   checkPatternMatch();
   spawnPiece();
+}
+
+// Clear completed rows and collapse board downward
+function clearCompletedRows() {
+  let clearedRows = 0;
+
+  for (let row = ROWS - 1; row >= 0; row--) {
+    const isFull = board[row].every((cell) => cell !== 0 && cell !== 8);
+
+    if (isFull) {
+      board.splice(row, 1);
+      board.unshift(Array(COLS).fill(0));
+      clearedRows++;
+      row++; // Re-check same row index after shifting
+    }
+  }
+
+  if (clearedRows > 0) {
+    score += clearedRows * 50;
+    updateScore();
+  }
 }
 
 // Set new target pattern
