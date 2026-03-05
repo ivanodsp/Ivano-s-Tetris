@@ -1,59 +1,39 @@
 # Ivano's Tetris
 
-<p align="center">
-  <img src="src/assets/game-preview-light.svg" alt="Ivano's Tetris light banner" width="900" />
-</p>
+## Disclaimer
+This is an educational fan-made project created for learning purposes.
 
-<p align="center">
-  <img src="src/assets/game-preview-neon.svg" alt="Ivano's Tetris neon banner" width="900" />
-</p>
-
-Classic Tetris with neon style, responsive controls, and mobile touch buttons.
-
-## Installation
-
-To get a copy of the project up and running on your local machine, clone the repository using:
-
-```bash
-git clone https://github.com/ivanodsp/Ivano-s-Tetris.git
-cd Ivano-s-Tetris
-```
+## Installation Instructions
+To install and run the project, follow these steps:
+1. Clone the repository:
+   ```
+   git clone https://github.com/ivanodsp/Ivano-s-Tetris.git
+   ```
+2. Navigate into the project directory:
+   ```
+   cd Ivano-s-Tetris
+   ```
+3. Install the necessary dependencies (if applicable).
 
 ## Play Locally
-
-```bash
-cd src
-python3 -m http.server 8000
-```
-
-Open `http://localhost:8000`.
+To play the game locally, open your browser and navigate to `index.html`.
 
 ## Features
-
-- 🎮 Classic Tetris gameplay
-- 🌈 Neon style graphics
-- 📱 Mobile touch controls
-- 💻 Responsive design
-- ⌨️ Keyboard controls
+- Classic Tetris gameplay
+- Score tracking
+- Adjustable speed
+- Customizable controls
 
 ## How to Play
-
-- **Arrow Keys** / **Touch buttons**: Move pieces left/right
-- **Up Arrow** / **Rotate button**: Rotate piece
-- **Down Arrow** / **Drop button**: Move piece down faster
-- **Space**: Drop piece instantly
+Use the arrow keys to move and rotate the falling blocks.
 
 ## Technologies
-
-- HTML5
-- CSS3
-- JavaScript (Vanilla)
+- HTML
+- CSS
+- JavaScript
 
 ## License
-
-MIT License
+This project is licensed under the MIT License.
 
 ## Author
-
-**ivanodsp** - [GitHub Profile](https://github.com/ivanodsp)
-"Proyecto educativo de Tetris con fines de aprendizaje. No es oficial ni comercial."
+Created by ivanodsp.
