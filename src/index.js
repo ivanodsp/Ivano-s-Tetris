@@ -4,16 +4,27 @@ const ROWS = 20;
 const BLOCK_SIZE = 30;
 const PATTERN_SIZE = 5;
 
-// Colors for blocks (dev-themed)
+const HIGH_SCORE_KEY = "ivanosTetrisHighScore";
+const LEGACY_HIGH_SCORE_KEY = "stackOverflownHighScore";
+
+const UI_COLORS = {
+  grid: "#1f2f47",
+  blockStroke: "#060c16",
+  patternBackground: "#030711",
+  patternBlock: "#ff2fd8",
+  patternStroke: "#1f2f47",
+};
+
+// Colors for blocks (neon palette)
 const COLORS = {
-  0: "#252526", // Empty
-  1: "#f48771", // Bug red
-  2: "#4ec9b0", // Function cyan
-  3: "#ce9178", // String orange
-  4: "#c586c0", // Class purple
-  5: "#dcdcaa", // Variable yellow
-  6: "#569cd6", // Keyword blue
-  7: "#b5cea8", // Number green
+  0: "#040b14", // Empty
+  1: "#ff4266", // Neon red
+  2: "#17f2ff", // Neon cyan
+  3: "#ff8b2b", // Neon orange
+  4: "#ff2fd8", // Neon pink
+  5: "#b7ff00", // Neon lime
+  6: "#5d7bff", // Electric indigo
+  7: "#f7ff4a", // Neon yellow
   8: "#000000", // Void (black)
 };
 
@@ -60,10 +71,14 @@ function init() {
     .fill(null)
     .map(() => Array(COLS).fill(0));
 
-  // Load high score from localStorage
-highScore = parseInt(localStorage.getItem("stackOverflownHighScore")) || 0;
-document.getElementById("high-score").textContent = highScore;
-// Set initial target pattern
+  // Load high score from localStorage (supports legacy key)
+  highScore =
+    parseInt(localStorage.getItem(HIGH_SCORE_KEY)) ||
+    parseInt(localStorage.getItem(LEGACY_HIGH_SCORE_KEY)) ||
+    0;
+  document.getElementById("high-score").textContent = highScore;
+
+  // Set initial target pattern
   setNewTargetPattern();
 
   // Spawn first piece
@@ -114,7 +129,7 @@ function draw() {
   }
 
   // Draw grid
-  ctx.strokeStyle = "#3e3e42";
+  ctx.strokeStyle = UI_COLORS.grid;
   ctx.lineWidth = 0.5;
   for (let row = 0; row <= ROWS; row++) {
     ctx.beginPath();
@@ -134,7 +149,7 @@ function draw() {
 function drawBlock(context, x, y, colorCode) {
   context.fillStyle = COLORS[colorCode];
   context.fillRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
-  context.strokeStyle = "#1e1e1e";
+  context.strokeStyle = UI_COLORS.blockStroke;
   context.strokeRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
 }
 
@@ -276,15 +291,15 @@ function drawTargetPattern() {
   if (!targetPattern) return;
 
   const blockSize = 20;
-  patternCtx.fillStyle = "#1e1e1e";
+  patternCtx.fillStyle = UI_COLORS.patternBackground;
   patternCtx.fillRect(0, 0, patternCanvas.width, patternCanvas.height);
 
   for (let row = 0; row < PATTERN_SIZE; row++) {
     for (let col = 0; col < PATTERN_SIZE; col++) {
       if (targetPattern.pattern[row][col]) {
-        patternCtx.fillStyle = "#f48771";
+        patternCtx.fillStyle = UI_COLORS.patternBlock;
         patternCtx.fillRect(col * blockSize, row * blockSize, blockSize, blockSize);
-        patternCtx.strokeStyle = "#3e3e42";
+        patternCtx.strokeStyle = UI_COLORS.patternStroke;
         patternCtx.strokeRect(col * blockSize, row * blockSize, blockSize, blockSize);
       }
     }
@@ -347,7 +362,7 @@ function updateScore() {
   if (score > highScore) {
     highScore = score;
     document.getElementById("high-score").textContent = highScore;
-    localStorage.setItem("stackOverflownHighScore", highScore);
+    localStorage.setItem(HIGH_SCORE_KEY, highScore);
   }
 }
 

@@ -3,28 +3,29 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Stack Overflown - A Dev-Themed Puzzle Game</title>
+    <title>Ivano's Tetris</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <div class="game-container">
       <div class="main-panel">
         <div>
-          <h1>🧱 Stack Overflown</h1>
-          <div class="subtitle">Match the error patterns before you overflow!</div>
+          <h1>Ivano's Tetris</h1>
+          <div class="subtitle">Build neon shapes, clear rows, and chase a new high score.</div>
         </div>
         <canvas id="gameCanvas" width="300" height="600"></canvas>
       </div>
 
       <div class="side-panel">
-<div class="info-section">
-<h3>Level</h3>
-<div class="score" id="level">1</div>
-  <h3>Current Score</h3>
-   <div class="score" id="score">0</div>
-   <h3>High Score</h3>
-   <div class="high-score" id="high-score">0</div>
-</div>q
+        <div class="info-section">
+          <h3>Level</h3>
+          <div class="score" id="level">1</div>
+          <h3>Current Score</h3>
+          <div class="score" id="score">0</div>
+          <h3>High Score</h3>
+          <div class="high-score" id="high-score">0</div>
+          <div class="status" id="status">Playing...</div>
+        </div>
         <div class="info-section">
           <h3>Target Pattern</h3>
           <div class="pattern-preview">
@@ -47,8 +48,8 @@
     </div>
 
     <div class="game-over" id="gameOver">
-      <h2>STACK OVERFLOW!</h2>
-      <p>Your stack reached the ceiling</p>
+      <h2>GAME OVER</h2>
+      <p>Neon grid overloaded.</p>
       <p>Final Score: <span id="finalScore">0</span></p>
       <button onclick="location.reload()">Restart</button>
     </div>
