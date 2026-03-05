@@ -56,3 +56,4 @@ MIT License
 ## Author
 
 **ivanodsp** - [GitHub Profile](https://github.com/ivanodsp)
+"Proyecto educativo de Tetris con fines de aprendizaje. No es oficial ni comercial."
