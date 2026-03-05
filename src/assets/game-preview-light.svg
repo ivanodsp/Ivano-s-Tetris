@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1400" height="220" viewBox="0 0 1400 220" role="img" aria-labelledby="title desc">
-  <title id="title">Ivano's Tetris Banner</title>
+  <title id="title">Ivano's Tetris Light Banner</title>
   <desc id="desc">Light banner image for Ivano's Tetris repository.</desc>
   <defs>
     <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
