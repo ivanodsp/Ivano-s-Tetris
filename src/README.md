@@ -1,10 +1,9 @@
-# Stack Overflown
+# Ivano's Tetris
 
-Organize the falling blocks into the current debug pattern before the stack overflows! ⏳
+Classic Tetris with a neon visual style. Clear lines, level up, and beat your high score.
 
 ## How to Develop
 
 - `index.html` - the game container for playing
-- `index.js` - the primary game logic
-- `patterns.js` - the error patterns to match during gameplay
-- `style.css` - the game formatting and styling
+- `index.js` - the classic Tetris game logic
+- `style.css` - neon theme and layout styling

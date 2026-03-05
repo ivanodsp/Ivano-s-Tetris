@@ -1,7 +1,7 @@
 // Classic Tetris constants
 const COLS = 10;
 const ROWS = 20;
-const BLOCK_SIZE = 30;
+let BLOCK_SIZE = 30;
 
 const HIGH_SCORE_KEY = "ivanosTetrisHighScore";
 const LEGACY_HIGH_SCORE_KEY = "stackOverflownHighScore";
@@ -89,10 +89,13 @@ let isPaused = false;
 let dropCounter = 0;
 let dropInterval = 1000;
 let lastTime = 0;
+let elapsedTimeMs = 0;
 
 function init() {
   canvas = document.getElementById("gameCanvas");
   ctx = canvas.getContext("2d");
+
+  resizeBoard();
 
   board = Array(ROWS)
     .fill(null)
@@ -104,18 +107,27 @@ function init() {
     0;
 
   updateHud();
+  updateTimerDisplay();
   spawnPiece();
 
   requestAnimationFrame(gameLoop);
   document.addEventListener("keydown", handleKeyPress);
+  window.addEventListener("resize", resizeBoard);
 }
 
 function gameLoop(time = 0) {
-  if (!gameOver && !isPaused) {
-    const deltaTime = time - lastTime;
+  if (lastTime === 0) {
     lastTime = time;
+  }
 
+  const deltaTime = time - lastTime;
+  lastTime = time;
+
+  if (!gameOver && !isPaused) {
     dropCounter += deltaTime;
+    elapsedTimeMs += deltaTime;
+    updateTimerDisplay();
+
     if (dropCounter > dropInterval) {
       moveDown();
       dropCounter = 0;
@@ -156,6 +168,24 @@ function draw() {
     ctx.lineTo(col * BLOCK_SIZE, ROWS * BLOCK_SIZE);
     ctx.stroke();
   }
+}
+
+function resizeBoard() {
+  const availableWidth = Math.max(220, Math.min(420, window.innerWidth - 40));
+  const availableHeight = Math.max(400, window.innerHeight - 160);
+  const byWidth = Math.floor(availableWidth / COLS);
+  const byHeight = Math.floor(availableHeight / ROWS);
+
+  BLOCK_SIZE = Math.max(16, Math.min(30, byWidth, byHeight));
+  canvas.width = COLS * BLOCK_SIZE;
+  canvas.height = ROWS * BLOCK_SIZE;
+}
+
+function updateTimerDisplay() {
+  const totalSeconds = Math.floor(elapsedTimeMs / 1000);
+  const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
+  const seconds = String(totalSeconds % 60).padStart(2, "0");
+  document.getElementById("timer").textContent = `${minutes}:${seconds}`;
 }
 
 function drawBlock(x, y, colorCode) {
