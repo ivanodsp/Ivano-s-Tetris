@@ -1,30 +1,38 @@
 # Ivano's Tetris
 
+![Banner Image 1](https://example.com/banner1.png)
+![Banner Image 2](https://example.com/banner2.png)
+
 ## Installation
-To install the game, clone the repository and run the setup script:
+
+To get a copy of the project up and running on your local machine, clone the repository using:
 
 ```bash
 git clone https://github.com/ivanodsp/Ivano-s-Tetris.git
-cd Ivano-s-Tetris
-./setup.sh
 ```
 
 ## Features
+
 - Classic Tetris gameplay
-- 10 different levels
+- Multiple difficulty levels
 - High score tracking
-- Customizable controls
 
 ## How to Play
-Use the arrow keys to move and rotate the pieces. The goal is to create complete lines without gaps. When a line is filled, it will disappear, and you will earn points.
+
+1. Use the arrow keys to move the pieces.
+2. Rotate the pieces with the up arrow key.
+3. Complete a line to score points.
 
 ## Technologies
-- HTML, CSS, JavaScript
-- Node.js for backend
-- WebSocket for multiplayer support
+
+- HTML
+- CSS
+- JavaScript
+- Node.js (for server)
 
 ## Author
-Created by Ivano DSP.
 
-## Last Updated
-2026-03-05 22:18:49 UTC
+**ivanodsp** - [GitHub Profile](https://github.com/ivanodsp)
+
+### Date Updated
+2026-03-05 22:20:05
