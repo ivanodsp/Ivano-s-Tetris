@@ -5,23 +5,43 @@ let BLOCK_SIZE = 30;
 
 const HIGH_SCORE_KEY = "ivanosTetrisHighScore";
 const LEGACY_HIGH_SCORE_KEY = "stackOverflownHighScore";
+const THEME_KEY = "ivanosTetrisTheme";
 
-const UI_COLORS = {
-  grid: "#1f2f47",
-  blockStroke: "#060c16",
-  boardBackground: "#040b14",
-};
-
-// Neon color palette for pieces
-const COLORS = {
-  0: "#040b14",
-  1: "#17f2ff", // I
-  2: "#5d7bff", // J
-  3: "#ff8b2b", // L
-  4: "#f7ff4a", // O
-  5: "#b7ff00", // S
-  6: "#ff2fd8", // T
-  7: "#ff4266", // Z
+const THEMES = {
+  neon: {
+    ui: {
+      grid: "#1f2f47",
+      blockStroke: "#060c16",
+      boardBackground: "#040b14",
+    },
+    pieces: {
+      0: "#040b14",
+      1: "#17f2ff", // I
+      2: "#5d7bff", // J
+      3: "#ff8b2b", // L
+      4: "#f7ff4a", // O
+      5: "#b7ff00", // S
+      6: "#ff2fd8", // T
+      7: "#ff4266", // Z
+    },
+  },
+  pastel: {
+    ui: {
+      grid: "#b8d4f3",
+      blockStroke: "#dfeaf7",
+      boardBackground: "#f6fbff",
+    },
+    pieces: {
+      0: "#f6fbff",
+      1: "#92ddff", // I
+      2: "#a8b6ff", // J
+      3: "#ffc59b", // L
+      4: "#fff3a6", // O
+      5: "#b9eaa8", // S
+      6: "#ffb3df", // T
+      7: "#ffb1b1", // Z
+    },
+  },
 };
 
 // Standard 7 tetrominoes
@@ -90,6 +110,9 @@ let dropCounter = 0;
 let dropInterval = 1000;
 let lastTime = 0;
 let elapsedTimeMs = 0;
+let activeTheme = "neon";
+let activeUiColors = THEMES.neon.ui;
+let activePieceColors = THEMES.neon.pieces;
 
 const INPUT_REPEAT = {
   horizontalDelay: 130,
@@ -118,6 +141,7 @@ const nextRepeat = {
 function init() {
   canvas = document.getElementById("gameCanvas");
   ctx = canvas.getContext("2d");
+  setupThemeSelector();
 
   resizeBoard();
 
@@ -167,7 +191,7 @@ function gameLoop(time = 0) {
 }
 
 function draw() {
-  ctx.fillStyle = UI_COLORS.boardBackground;
+  ctx.fillStyle = activeUiColors.boardBackground;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   for (let row = 0; row < ROWS; row++) {
@@ -182,7 +206,7 @@ function draw() {
     drawPiece(currentPiece, currentX, currentY);
   }
 
-  ctx.strokeStyle = UI_COLORS.grid;
+  ctx.strokeStyle = activeUiColors.grid;
   ctx.lineWidth = 0.5;
   for (let row = 0; row <= ROWS; row++) {
     ctx.beginPath();
@@ -217,10 +241,34 @@ function updateTimerDisplay() {
 }
 
 function drawBlock(x, y, colorCode) {
-  ctx.fillStyle = COLORS[colorCode];
+  ctx.fillStyle = activePieceColors[colorCode];
   ctx.fillRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
-  ctx.strokeStyle = UI_COLORS.blockStroke;
+  ctx.strokeStyle = activeUiColors.blockStroke;
   ctx.strokeRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+}
+
+function setupThemeSelector() {
+  const themeSelect = document.getElementById("themeSelect");
+  const storedTheme = localStorage.getItem(THEME_KEY);
+  const initialTheme = THEMES[storedTheme] ? storedTheme : "neon";
+
+  applyTheme(initialTheme);
+
+  if (!themeSelect) return;
+
+  themeSelect.value = initialTheme;
+  themeSelect.addEventListener("change", () => {
+    applyTheme(themeSelect.value);
+  });
+}
+
+function applyTheme(themeName) {
+  const selectedTheme = THEMES[themeName] ? themeName : "neon";
+  activeTheme = selectedTheme;
+  activeUiColors = THEMES[selectedTheme].ui;
+  activePieceColors = THEMES[selectedTheme].pieces;
+  document.body.setAttribute("data-theme", activeTheme);
+  localStorage.setItem(THEME_KEY, activeTheme);
 }
 
 function drawPiece(piece, offsetX, offsetY) {
