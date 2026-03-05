@@ -399,8 +399,28 @@ function rotate() {
     shape: rotatedShape,
   };
 
-  if (!checkCollision(rotatedPiece, currentX, currentY)) {
-    currentPiece = rotatedPiece;
+  // Try wall/floor kicks to allow rotation in tight spaces.
+  const kickOffsets = [
+    { x: 0, y: 0 },
+    { x: 1, y: 0 },
+    { x: -1, y: 0 },
+    { x: 2, y: 0 },
+    { x: -2, y: 0 },
+    { x: 0, y: -1 },
+    { x: 1, y: -1 },
+    { x: -1, y: -1 },
+  ];
+
+  for (const offset of kickOffsets) {
+    const targetX = currentX + offset.x;
+    const targetY = currentY + offset.y;
+
+    if (!checkCollision(rotatedPiece, targetX, targetY)) {
+      currentPiece = rotatedPiece;
+      currentX = targetX;
+      currentY = targetY;
+      return;
+    }
   }
 }
 
