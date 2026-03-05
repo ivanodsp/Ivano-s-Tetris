@@ -6,6 +6,10 @@ let BLOCK_SIZE = 30;
 const HIGH_SCORE_KEY = "ivanosTetrisHighScore";
 const LEGACY_HIGH_SCORE_KEY = "stackOverflownHighScore";
 const THEME_KEY = "ivanosTetrisTheme";
+const SUBTITLES = {
+  neon: "Classic Tetris in neon mode: stack smart, clear lines, level up.",
+  pastel: "Classic Tetris in light mode: stack smart, clear lines, level up.",
+};
 
 const THEMES = {
   neon: {
@@ -268,6 +272,10 @@ function applyTheme(themeName) {
   activeUiColors = THEMES[selectedTheme].ui;
   activePieceColors = THEMES[selectedTheme].pieces;
   document.body.setAttribute("data-theme", activeTheme);
+  const subtitle = document.getElementById("gameSubtitle");
+  if (subtitle) {
+    subtitle.textContent = SUBTITLES[activeTheme] || SUBTITLES.neon;
+  }
   localStorage.setItem(THEME_KEY, activeTheme);
 }
 

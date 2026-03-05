@@ -1,13 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="310" viewBox="0 0 1200 310" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="220" viewBox="0 0 1200 220" role="img" aria-labelledby="title desc">
   <title id="title">Ivano's Tetris Banner</title>
-  <desc id="desc">Neon banner image for Ivano's Tetris README.</desc>
+  <desc id="desc">Light banner image for Ivano's Tetris repository.</desc>
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#02132a"/>
-      <stop offset="100%" stop-color="#0b0f20"/>
-    </linearGradient>
     <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feGaussianBlur stdDeviation="5" result="blur"/>
       <feMerge>
         <feMergeNode in="blur"/>
         <feMergeNode in="SourceGraphic"/>
@@ -15,16 +11,16 @@
     </filter>
   </defs>
 
-  <rect width="1200" height="310" fill="url(#bg)"/>
-  <rect x="0" y="0" width="1200" height="310" fill="#000" opacity="0.12"/>
+  <rect width="1200" height="220" fill="#f7fbff"/>
+  <rect x="1" y="1" width="1198" height="218" fill="none" stroke="#d8e7f6" stroke-width="2"/>
 
   <text
     x="600"
-    y="125"
+    y="92"
     text-anchor="middle"
-    fill="#b7ff00"
+    fill="#67b95b"
     font-family="Courier New, monospace"
-    font-size="96"
+    font-size="82"
     font-weight="700"
     letter-spacing="2"
     filter="url(#glow)">
@@ -33,11 +29,11 @@
 
   <text
     x="600"
-    y="205"
+    y="158"
     text-anchor="middle"
-    fill="#8fc2de"
+    fill="#395a88"
     font-family="Courier New, monospace"
-    font-size="39">
+    font-size="34">
     Classic Tetris in neon mode: stack smart, clear lines, level up.
   </text>
 </svg>
